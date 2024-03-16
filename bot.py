@@ -2,7 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 
 import handlers
-from dayvinchick.data.database import DataBase
+from data.database import DataBase
 from config_reader import config
 
 
