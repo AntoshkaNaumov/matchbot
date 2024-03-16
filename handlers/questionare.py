@@ -5,12 +5,12 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from dayvinchick.keyboards.builders import form_btn
-from dayvinchick.data.database import DataBase
+from keyboards.builders import form_btn
+from data.database import DataBase
 
-from dayvinchick.utils.states import Form
-from dayvinchick.utils.city import check_city
-from dayvinchick.keyboards.reply import main
+from utils.states import Form
+from utils.city import check_city
+from keyboards.reply import main
 
 router = Router()
 
