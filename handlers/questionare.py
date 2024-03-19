@@ -19,8 +19,9 @@ db = DataBase("users_base.db", "users")  # Создание экземпляра
 
 @router.message(F.text == "заполнить анкету")
 async def my_form(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    user_data = await db.get_user_data(user_id)
+    #user_id = message.from_user.id
+    user_name = message.from_user.username
+    user_data = await db.get_user_data(user_name)
 
     if user_data:
         await message.answer("Такой пользователь уже существует!")
