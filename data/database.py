@@ -126,12 +126,12 @@ class DataBase:
             profiles = await cursor.fetchall()
             return profiles
 
-    async def get_author_by_id(self, author_id: int):
+    async def get_author_by_name(self, user_name: Optional[str]):
         async with aiosqlite.connect(self.name) as db:
             cursor = await db.cursor()
             await cursor.execute(
                 f"SELECT * FROM users WHERE user_name = ?",
-                (author_id,)
+                (user_name,)
             )
             author_data = await cursor.fetchone()
             if author_data:
@@ -187,3 +187,42 @@ class DataBase:
             )
             likes = await cursor.fetchall()
             return likes
+
+    async def get_profiles_by_gender_and_age(self, gender: str, age_group: str):
+        async with aiosqlite.connect(self.name) as db:
+            cursor = await db.cursor()
+
+            # Определяем границы возрастной группы
+            if age_group == "18-30 лет":
+                min_age, max_age = 18, 30
+            elif age_group == "31-40 лет":
+                min_age, max_age = 31, 40
+            elif age_group == "41-50 лет":
+                min_age, max_age = 41, 50
+            elif age_group == ">50 лет":
+                min_age, max_age = 51, None
+            else:
+                return []
+
+            # Формируем запрос SQL для получения анкет
+            query = """
+            SELECT * FROM users 
+            WHERE sex = ? 
+            AND (age BETWEEN ? AND ? OR (age >= ? AND ? IS NULL))
+            """
+            params = (gender, min_age, max_age, min_age, max_age)
+
+            # Выполняем запрос
+            await cursor.execute(query, params)
+            profiles = await cursor.fetchall()
+            return profiles
+
+    async def get_profiles_by_gender(self, gender: str):
+        async with aiosqlite.connect(self.name) as db:
+            cursor = await db.cursor()
+            await cursor.execute(
+                f"SELECT * FROM users WHERE sex = ?",
+                (gender,)
+            )
+            profiles = await cursor.fetchall()
+            return profiles
