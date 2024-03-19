@@ -5,15 +5,15 @@ from aiogram.fsm.context import FSMContext
 from typing import Generator
 from aiogram.fsm.state import State
 
-from dayvinchick.utils.states import Form
-from dayvinchick.data.database import DataBase
-from dayvinchick.keyboards.inline import inline_kb
-from dayvinchick.keyboards.reply import main, stat_menu, gender_menu, age_menu
+from utils.states import Form
+from data.database import DataBase
+from keyboards.inline import inline_kb
+from keyboards.reply import main, stat_menu, gender_menu, age_menu
 
 from aiogram import Bot
 
 
-from dayvinchick.config_reader import config
+from config_reader import config
 
 import logging
 
