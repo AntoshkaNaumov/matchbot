@@ -5,15 +5,15 @@ from aiogram.fsm.context import FSMContext
 from typing import Generator
 from aiogram.fsm.state import State
 
-from utils.states import Form
-from data.database import DataBase
-from keyboards.inline import inline_kb
-from keyboards.reply import main, stat_menu
+from dayvinchick.utils.states import Form
+from dayvinchick.data.database import DataBase
+from dayvinchick.keyboards.inline import inline_kb
+from dayvinchick.keyboards.reply import main, stat_menu, gender_menu, age_menu
 
 from aiogram import Bot
 
 
-from config_reader import config
+from dayvinchick.config_reader import config
 
 import logging
 
@@ -29,24 +29,67 @@ db = DataBase("users_base.db", "users")  # Создание экземпляра
 db2 = DataBase("users_base.db", "likes")
 
 
-@router.message(F.text == "просмотр анкет")
-async def view_profiles(message: types.Message, state: FSMContext):
-    profiles = await db.get_all_profiles()  # Получаем все анкеты из базы данных
-    if not profiles:
-        await message.answer("В базе данных нет ни одной анкеты.")
-        return
+#@router.message(F.text == "просмотр анкет")
+#async def view_profiles(message: types.Message, state: FSMContext):
+#    profiles = await db.get_all_profiles()  # Получаем все анкеты из базы данных
+#    if not profiles:
+#        await message.answer("В базе данных нет ни одной анкеты.")
+#        return
 
     # Создаем генератор, который будет возвращать по одной анкете
-    profilegenerator = (profile for profile in profiles)
+#    profilegenerator = (profile for profile in profiles)
 
     # Получаем первую анкету
-    profile = next(profilegenerator, None)
+#    profile = next(profilegenerator, None)
 
     # Если анкета есть, то отправляем ее пользователю
+#    if profile:
+#        await send_profile(message, profile, profilegenerator, state)  # Добавляем state в качестве аргумента
+#    else:
+#        await message.answer("В базе данных нет ни одной анкеты.")
+
+
+@router.message(F.text == "просмотр анкет")
+async def view_profiles(message: types.Message, state: FSMContext):
+    await message.answer("Выберите пол:", reply_markup=gender_menu)
+
+
+@router.message(F.text == "Парень")
+async def view_profiles_by_gender(message: types.Message, state: FSMContext):
+    gender = message.text
+    print(gender)
+    profiles = await db.get_profiles_by_gender(gender)  # Замените эту строку вашим запросом к базе данных
+    print(profiles)
+    if not profiles:
+        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
+        return
+
+    profilegenerator = (profile for profile in profiles)
+    profile = next(profilegenerator, None)
+
     if profile:
-        await send_profile(message, profile, profilegenerator, state)  # Добавляем state в качестве аргумента
+        await send_profile(message, profile, profilegenerator, state)
     else:
-        await message.answer("В базе данных нет ни одной анкеты.")
+        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
+
+
+@router.message(F.text == "Девушка")
+async def view_profiles_by_gender(message: types.Message, state: FSMContext):
+    gender = message.text
+    print(gender)
+    profiles = await db.get_profiles_by_gender(gender)  # Замените эту строку вашим запросом к базе данных
+    print(profiles)
+    if not profiles:
+        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
+        return
+
+    profilegenerator = (profile for profile in profiles)
+    profile = next(profilegenerator, None)
+
+    if profile:
+        await send_profile(message, profile, profilegenerator, state)
+    else:
+        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
 
 
 @router.message(State(Form.name))
@@ -118,8 +161,8 @@ async def write_message_callback(query: types.CallbackQuery, state: FSMContext, 
     profile = data.get("profile")
 
     if profile:
-        author_id = profile[1]  # ID автора анкеты
-        author_data = await db.get_author_by_id(author_id)  # Получаем данные об авторе анкеты
+        user_name = profile[1]  # ID автора анкеты
+        author_data = await db.get_author_by_name(user_name)  # Получаем данные об авторе анкеты
         if author_data:
             # Формируем URI для открытия чата с пользователем
             username = author_data['user_name']
