@@ -29,67 +29,24 @@ db = DataBase("users_base.db", "users")  # Создание экземпляра
 db2 = DataBase("users_base.db", "likes")
 
 
-#@router.message(F.text == "просмотр анкет")
-#async def view_profiles(message: types.Message, state: FSMContext):
-#    profiles = await db.get_all_profiles()  # Получаем все анкеты из базы данных
-#    if not profiles:
-#        await message.answer("В базе данных нет ни одной анкеты.")
-#        return
-
-    # Создаем генератор, который будет возвращать по одной анкете
-#    profilegenerator = (profile for profile in profiles)
-
-    # Получаем первую анкету
-#    profile = next(profilegenerator, None)
-
-    # Если анкета есть, то отправляем ее пользователю
-#    if profile:
-#        await send_profile(message, profile, profilegenerator, state)  # Добавляем state в качестве аргумента
-#    else:
-#        await message.answer("В базе данных нет ни одной анкеты.")
-
-
 @router.message(F.text == "просмотр анкет")
 async def view_profiles(message: types.Message, state: FSMContext):
-    await message.answer("Выберите пол:", reply_markup=gender_menu)
-
-
-@router.message(F.text == "Парень")
-async def view_profiles_by_gender(message: types.Message, state: FSMContext):
-    gender = message.text
-    print(gender)
-    profiles = await db.get_profiles_by_gender(gender)  # Замените эту строку вашим запросом к базе данных
-    print(profiles)
+    profiles = await db.get_all_profiles()  # Получаем все анкеты из базы данных
     if not profiles:
-        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
+        await message.answer("В базе данных нет ни одной анкеты.")
         return
 
+    # Создаем генератор, который будет возвращать по одной анкете
     profilegenerator = (profile for profile in profiles)
+
+    # Получаем первую анкету
     profile = next(profilegenerator, None)
 
+    # Если анкета есть, то отправляем ее пользователю
     if profile:
-        await send_profile(message, profile, profilegenerator, state)
+        await send_profile(message, profile, profilegenerator, state)  # Добавляем state в качестве аргумента
     else:
-        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
-
-
-@router.message(F.text == "Девушка")
-async def view_profiles_by_gender(message: types.Message, state: FSMContext):
-    gender = message.text
-    print(gender)
-    profiles = await db.get_profiles_by_gender(gender)  # Замените эту строку вашим запросом к базе данных
-    print(profiles)
-    if not profiles:
-        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
-        return
-
-    profilegenerator = (profile for profile in profiles)
-    profile = next(profilegenerator, None)
-
-    if profile:
-        await send_profile(message, profile, profilegenerator, state)
-    else:
-        await message.answer(f"В базе данных нет анкет с полом '{gender}'.")
+        await message.answer("В базе данных нет ни одной анкеты.")
 
 
 @router.message(State(Form.name))
