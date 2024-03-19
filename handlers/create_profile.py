@@ -6,9 +6,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram.fsm.state import StatesGroup, State
 
-from keyboards.inline import inline_kb
-from data.database import DataBase  # Импорт класса DataBase из файла database.py
-from utils.states import Form
+from dayvinchick.keyboards.inline import inline_kb
+from dayvinchick.data.database import DataBase  # Импорт класса DataBase из файла database.py
+from dayvinchick.utils.states import Form
 
 
 router = Router()
