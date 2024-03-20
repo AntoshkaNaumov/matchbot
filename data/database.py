@@ -21,7 +21,7 @@ class DataBase:
                 name VARCHAR(20),
                 age VARCHAR(40),
                 city VARCHAR(255),
-                sex INTEGER(1),
+                sex VARCHAR(20),
                 look_for VARCHAR(40),
                 about TEXT(500),
                 photo BLOB,
@@ -119,10 +119,18 @@ class DataBase:
             )
             await db.commit()
 
-    async def get_all_profiles(self, user_look_for: str):
+    async def get_all_profiles_by_gender(self, user_sex: int):
         async with aiosqlite.connect(self.name) as db:
             cursor = await db.cursor()
-            await cursor.execute("SELECT * FROM users WHERE look_for = ?", (user_look_for,))
+            opposite_sex = "Девушка" if user_sex == "Парень" else "Парень"
+            await cursor.execute("SELECT * FROM users WHERE sex = ?", (opposite_sex,))
+            profiles = await cursor.fetchall()
+            return profiles
+
+    async def get_all_profiles(self):
+        async with aiosqlite.connect(self.name) as db:
+            cursor = await db.cursor()
+            await cursor.execute("SELECT * FROM users")
             profiles = await cursor.fetchall()
             return profiles
 
@@ -187,42 +195,3 @@ class DataBase:
             )
             likes = await cursor.fetchall()
             return likes
-
-    async def get_profiles_by_gender_and_age(self, gender: str, age_group: str):
-        async with aiosqlite.connect(self.name) as db:
-            cursor = await db.cursor()
-
-            # Определяем границы возрастной группы
-            if age_group == "18-30 лет":
-                min_age, max_age = 18, 30
-            elif age_group == "31-40 лет":
-                min_age, max_age = 31, 40
-            elif age_group == "41-50 лет":
-                min_age, max_age = 41, 50
-            elif age_group == ">50 лет":
-                min_age, max_age = 51, None
-            else:
-                return []
-
-            # Формируем запрос SQL для получения анкет
-            query = """
-            SELECT * FROM users 
-            WHERE sex = ? 
-            AND (age BETWEEN ? AND ? OR (age >= ? AND ? IS NULL))
-            """
-            params = (gender, min_age, max_age, min_age, max_age)
-
-            # Выполняем запрос
-            await cursor.execute(query, params)
-            profiles = await cursor.fetchall()
-            return profiles
-
-    async def get_profiles_by_gender(self, gender: str):
-        async with aiosqlite.connect(self.name) as db:
-            cursor = await db.cursor()
-            await cursor.execute(
-                f"SELECT * FROM users WHERE sex = ?",
-                (gender,)
-            )
-            profiles = await cursor.fetchall()
-            return profiles
