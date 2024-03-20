@@ -32,25 +32,18 @@ db2 = DataBase("users_base.db", "likes")
 @router.message(F.text == "просмотр анкет")
 async def view_profiles(message: types.Message, state: FSMContext):
     user_name = message.from_user.username
-    user_data = await db.get_user_data(user_name)  # Получение данных о текущем пользователе
+    user_data = await db.get_user_data(user_name)
     if user_data:
-        user_look_for = user_data['look_for']  # Получение предпочтений пользователя из его данных
-
-
-        profiles = await db.get_all_profiles(user_look_for)  # Получаем анкеты в соответствии с предпочтениями пользователя
+        user_sex = user_data['sex']  # Получаем пол текущего пользователя
+        profiles = await db.get_all_profiles_by_gender(user_sex)
         if not profiles:
             await message.answer("В базе данных нет ни одной анкеты.")
             return
 
-        # Создаем генератор, который будет возвращать по одной анкете
         profilegenerator = (profile for profile in profiles)
-
-        # Получаем первую анкету
         profile = next(profilegenerator, None)
-
-        # Если анкета есть, то отправляем ее пользователю
         if profile:
-            await send_profile(message, profile, profilegenerator, state)  # Добавляем state в качестве аргумента
+            await send_profile(message, profile, profilegenerator, state)
         else:
             await message.answer("В базе данных нет ни одной анкеты.")
 
@@ -62,6 +55,7 @@ async def send_profile(message: types.Message, profile: tuple, profilegenerator:
                       f"Возраст: {profile[3]}\n" \
                       f"Город: {profile[4]}\n" \
                       f"Пол: {profile[5]}\n" \
+                      f"Кого предпочитаю искать: {profile[6]}\n" \
                       f"О себе: {profile[7]}\n"
 
     # Отправляем текст анкеты
