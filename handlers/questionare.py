@@ -51,12 +51,12 @@ async def form_age(message: Message, state: FSMContext):
     age_str = message.text.strip()
     if age_str.isdigit():
         age = int(age_str)
-        if 16 <= age <= 80:
+        if 18 <= age <= 80:
             await state.update_data(age=age)
             await state.set_state(Form.city)
             await message.answer("Теперь укажи свой город")
         else:
-            await message.answer("Возраст должен быть от 16 до 80 лет. Попробуй ещё раз!")
+            await message.answer("Возраст должен быть от 18 до 80 лет. Попробуй ещё раз!")
     else:
         await message.answer("Попробуй ещё раз! Возраст должен быть целым числом.")
 
@@ -82,7 +82,7 @@ async def form_sex(message: Message, state: FSMContext):
     await state.set_state(Form.look_for)
     await message.answer(
         "Кого ты предпочитаешь искать?",
-        reply_markup=form_btn(["Парни", "Девушки", "Мне все равно"])
+        reply_markup=form_btn(["Парни", "Девушки"])
     )
 
 
@@ -93,7 +93,7 @@ async def incorrect_form_sex(message: Message, state: FSMContext):
 
 @router.message(
     Form.look_for,
-    F.text.casefold().in_(["девушки", "парни", "мне все равно"])
+    F.text.casefold().in_(["девушки", "парни"])
 )
 async def form_look_for(message: Message, state: FSMContext):
     await state.update_data(look_for=message.text)
