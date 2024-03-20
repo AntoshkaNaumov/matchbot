@@ -129,16 +129,14 @@ async def form_photo(message: Message, state: FSMContext, db: DataBase):
     data = await state.get_data()
     #user_id = message.from_user.id
     username = message.from_user.username
-
     await state.clear()
-
     frm_text = []
     [frm_text.append(value) for _, value in data.items()]
     await db.insert(username, frm_text, photo_data, photo_file_id)
     #await db.insert(user_id, frm_text, photo_data)
 
     await message.answer_photo(photo_file_id, "\n".join(map(str, frm_text)))
-    await message.answer("Выберите действие:", reply_markup=main)
+    await message.answer("Выбери действие:", reply_markup=main)
 
 
 @router.message(Form.photo, ~F.photo)
