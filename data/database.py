@@ -119,10 +119,10 @@ class DataBase:
             )
             await db.commit()
 
-    async def get_all_profiles(self):
+    async def get_all_profiles(self, user_look_for: str):
         async with aiosqlite.connect(self.name) as db:
             cursor = await db.cursor()
-            await cursor.execute("SELECT * FROM users")
+            await cursor.execute("SELECT * FROM users WHERE look_for = ?", (user_look_for,))
             profiles = await cursor.fetchall()
             return profiles
 
