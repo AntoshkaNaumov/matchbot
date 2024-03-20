@@ -31,22 +31,28 @@ db2 = DataBase("users_base.db", "likes")
 
 @router.message(F.text == "просмотр анкет")
 async def view_profiles(message: types.Message, state: FSMContext):
-    profiles = await db.get_all_profiles()  # Получаем все анкеты из базы данных
-    if not profiles:
-        await message.answer("В базе данных нет ни одной анкеты.")
-        return
+    user_name = message.from_user.username
+    user_data = await db.get_user_data(user_name)  # Получение данных о текущем пользователе
+    if user_data:
+        user_look_for = user_data['look_for']  # Получение предпочтений пользователя из его данных
 
-    # Создаем генератор, который будет возвращать по одной анкете
-    profilegenerator = (profile for profile in profiles)
 
-    # Получаем первую анкету
-    profile = next(profilegenerator, None)
+        profiles = await db.get_all_profiles(user_look_for)  # Получаем анкеты в соответствии с предпочтениями пользователя
+        if not profiles:
+            await message.answer("В базе данных нет ни одной анкеты.")
+            return
 
-    # Если анкета есть, то отправляем ее пользователю
-    if profile:
-        await send_profile(message, profile, profilegenerator, state)  # Добавляем state в качестве аргумента
-    else:
-        await message.answer("В базе данных нет ни одной анкеты.")
+        # Создаем генератор, который будет возвращать по одной анкете
+        profilegenerator = (profile for profile in profiles)
+
+        # Получаем первую анкету
+        profile = next(profilegenerator, None)
+
+        # Если анкета есть, то отправляем ее пользователю
+        if profile:
+            await send_profile(message, profile, profilegenerator, state)  # Добавляем state в качестве аргумента
+        else:
+            await message.answer("В базе данных нет ни одной анкеты.")
 
 
 @router.message(State(Form.name))
