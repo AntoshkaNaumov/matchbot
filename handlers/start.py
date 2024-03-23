@@ -3,8 +3,8 @@ from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram import types
 
-from dayvinchick.keyboards.reply import main
-from dayvinchick.data.database import DataBase
+from keyboards.reply import main
+from data.database import DataBase
 
 router = Router()
 
