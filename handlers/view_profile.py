@@ -8,7 +8,7 @@ from aiogram.fsm.state import State
 from utils.states import Form
 from data.database import DataBase
 from keyboards.inline import inline_kb
-from keyboards.reply import main, stat_menu, gender_menu, age_menu
+from keyboards.reply import main, stat_menu
 
 from aiogram import Bot
 
